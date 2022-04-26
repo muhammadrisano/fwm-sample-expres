@@ -1,81 +1,40 @@
 const express = require('express')
-
 const app = express()
+const productController =  require('./src/controller/products')
+const commonMid = require('./src/middlewares/common')
+const categoryController = require('./src/controller/category')
+const categoryRouter = require('./src/routes/category')
+const productsRouter = require('./src/routes/products')
 
+app.use( express.json())
 
-// let products =[
-//     {
-//         id: 1,
-//         name: 'baju',
-//         price: 0,
-//         stock: 0
-//     }
-// ]
+// app.use('/coba',commonMid.myMiddle)
+// // app.use(myMiddle)
 
-let user = []
+// app.get('/helo',commonMid.myMiddle, (req, res, next)=>{
+//     res.send('hello word')
+// })
 
-app.use(express.json())
+// products
+// app.get('/products',productController.getProduct)
+// app.post('/products', commonMid.validate, productController.insert)
+// app.put('/products/:id', productController.update)
+// app.delete('/products/:idproduct',productController.delete)
 
-app.get('/helo', (req, res, next)=>{
-    res.send('hello word')
-})
+// category
 
-app.get('/products', (req, res, next)=>{
-    res.json({
-        data: products
+// app.get('/category', categoryController.getCategory)
+// app.post('/category', categoryController.insertCategory)
+// app.put('/category/:id', categoryController.updateCategory)
+// app.delete('/category/:id', categoryController.deleteCategory)
+app.use('/products', productsRouter )
+app.use('/category', categoryRouter)
+
+app.all('*', (req, res, next)=>{
+    res.status(404).json({
+        message: 'url not found'
     })
 })
-
-app.post('/products', (req, res, next)=>{
-    // console.log(req.body);
-    // const id = req.body.id
-    // const stock = req.body.stock
-    // const price = req.body.price
-    // const name = req.body.name
-    const {id,stock, name, price} = req.body
-
-    products.push({
-        id,
-        name,
-        stock,
-        price
-    })
-    res.json({
-        message: 'data berhasil ditambahkan'
-    })
-})
-
-app.put('/products/:id', (req, res, next)=>{
-    const {name, price, stock} = req.body
-    const id = req.params.id
-
-    products = products.map((item)=>{
-        if(item.id ===id){
-            const result = {
-                id,
-                name,
-                price,
-                stock
-            }
-            return result
-        }else{
-            return item
-        }
-    })
-    res.json({
-        message: 'data berhasil di update'
-    })
-})
-
-app.delete('/products/:idproduct', (req, res, next)=>{
-    const id = req.params.idproduct
-    products = products.filter((item)=>item.id != id)
-    
-    res.json({
-        message: 'adata berhasil di hapus dengan id = '+ id
-    })
-})
-
 app.listen(4000, ()=>{
     console.log('Server starting on port 4000');
 })
