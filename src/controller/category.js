@@ -1,39 +1,59 @@
-const { json } = require('express/lib/response')
 // const pool = require('../config/db')
+const createError = require('http-errors')
 const categoryModel = require('../models/category')
+const errorServ = new createError.InternalServerError()
+exports.getCategory = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 5
+    const offset = (page - 1) * limit
+    const result = await categoryModel.select({ offset, limit })
 
-exports.getCategory = async(req, res, next)=>{
-    try {
-        const result = await categoryModel.select()
-        res.status(200).json({
-            data: result
-        })
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            message: 'internal server error'
-        })
-    }
+    // paginatino
+    const { rows: [count] } = await categoryModel.countCategory()
+    const totalData = parseInt(count.total)
+    const totalPage = Math.ceil(totalData / limit)
+
+    res.status(200).json({
+      pagination: {
+        currentPage: page,
+        limit,
+        totalData,
+        totalPage
+      },
+      data: result
+    })
+  } catch (error) {
+    console.log(error)
+    next(errorServ)
+  }
 }
 
-exports.insertCategory = (req, res, next)=>{
-    const {id, name} = req.body
+exports.insertCategory = (req, res, next) => {
+  const { id, name } = req.body
 
-    const data = {
-        id,
-        name
-    }
-    categoryModel.insert(data)
-    .then((result)=>{
-        res.status(201).json({
-            data
-        })
+  const data = {
+    id,
+    name
+  }
+  categoryModel.insert(data)
+    .then(() => {
+      res.status(201).json({
+        data
+      })
     })
-    .catch((error)=>{
-        console.log(error);
-        res.status(500).json({
-            message: 'internal server erorr'
-        })
+    .catch((error) => {
+      console.log(error)
+      next(errorServ)
+      // cara 1
+    //   const error = new Error('ada error id insert cateogry')
+    //   error.status = 500
+    //   next(error)
+    // cara 2
+    // next({message: 'ada error bro', status: 500})
+    // cara 3
+    //   next(createError(500, 'ada error di input anda'))
+    //   next(new createError.NotFound())
     })
 }
 // exports.updateCategory = (req, res, next)=>{
@@ -53,30 +73,28 @@ exports.insertCategory = (req, res, next)=>{
 //     })
 // }
 
-exports.deleteCategory = (req, res, next)=>{
-    const id = req.params.id
-    categoryModel.deleteCategory(id)
-    .then((result)=>{
-        res.json({
-            message: 'data berhasil di hapus'
-        })
+exports.deleteCategory = (req, res, next) => {
+  const id = req.params.id
+  categoryModel.deleteCategory(id)
+    .then(() => {
+      res.json({
+        message: 'data berhasil di hapus'
+      })
     })
-    .catch((error)=>{
-        console.log(error);
-        res.status(500).json({
-            message: 'internal server error'
-        })
+    .catch((error) => {
+      console.log(error)
+      next(new createError.InternalServerError())
     })
-    
-    // pool.query("DELETE FROM category WHERE id = $1", [id], (err, result)=>{
-    //     if(!err){
-    //         res.json({
-    //             message: result
-    //         })
-    //     }else{
-    //         res.json({
-    //             message: 'internal server error'
-    //         })
-    //     }
-    // })
 }
+
+// pool.query("DELETE FROM category WHERE id = $1", [id], (err, result)=>{
+//     if(!err){
+//         res.json({
+//             message: result
+//         })
+//     }else{
+//         res.json({
+//             message: 'internal server error'
+//         })
+//     }
+// })

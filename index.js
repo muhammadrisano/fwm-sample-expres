@@ -1,17 +1,25 @@
 require('dotenv').config()
-const productController =  require('./src/controller/products')
-const commonMid = require('./src/middlewares/common')
-const categoryController = require('./src/controller/category')
+// const productController =  require('./src/controller/products')
+// const commonMid = require('./src/middlewares/common')
+// const categoryController = require('./src/controller/category')
+// const getProduct = require('./src/controller/products')
+const express = require('express')
+const cors = require('cors')
+const createError = require('http-errors')
+const morgan = require('morgan')
 const categoryRouter = require('./src/routes/category')
 const productsRouter = require('./src/routes/products')
-const getProduct = require('./src/controller/products')
+// const commonMid = require('./src/middlewares/common')
 
-const express = require('express')
 const app = express()
 const PORT = process.env.PORT || 5000
 // middleware
-app.use( express.json())
+app.use(express.json())
+app.use(cors())
+app.use(morgan('dev'))
 
+// app.use(commonMid.myCors)
+// app.use(cors())
 // app.use('/coba',commonMid.myMiddle)
 // // app.use(myMiddle)
 
@@ -31,14 +39,25 @@ app.use( express.json())
 // app.post('/category', categoryController.insertCategory)
 // app.put('/category/:id', categoryController.updateCategory)
 // app.delete('/category/:id', categoryController.deleteCategory)
-app.use('/products', productsRouter )
 app.use('/category', categoryRouter)
+app.use('/products', productsRouter)
 
-app.all('*', (req, res, next)=>{
-    res.status(404).json({
-        message: 'url not found'
-    })
+app.all('*', (req, res, next) => {
+  next(new createError.NotFound())
 })
-app.listen(PORT, ()=>{
-    console.log(`Server starting on port ${PORT}`);
+
+app.use((err, req, res, next) => {
+  const messError = err.message || 'Internal Server Error'
+  const statusCode = err.status || 500
+
+  res.status(statusCode).json({
+    message: messError
+  })
 })
+
+app.listen(PORT, () => {
+  console.log(`Server starting on port ${PORT}`)
+})
+
+// eslint
+// https://npm.io/package/eslint-config-standard
