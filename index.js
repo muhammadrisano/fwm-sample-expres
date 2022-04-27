@@ -1,11 +1,15 @@
-const express = require('express')
-const app = express()
+require('dotenv').config()
 const productController =  require('./src/controller/products')
 const commonMid = require('./src/middlewares/common')
 const categoryController = require('./src/controller/category')
 const categoryRouter = require('./src/routes/category')
 const productsRouter = require('./src/routes/products')
+const getProduct = require('./src/controller/products')
 
+const express = require('express')
+const app = express()
+const PORT = process.env.PORT || 5000
+// middleware
 app.use( express.json())
 
 // app.use('/coba',commonMid.myMiddle)
@@ -16,7 +20,7 @@ app.use( express.json())
 // })
 
 // products
-// app.get('/products',productController.getProduct)
+// app.get('/products',getProduct)
 // app.post('/products', commonMid.validate, productController.insert)
 // app.put('/products/:id', productController.update)
 // app.delete('/products/:idproduct',productController.delete)
@@ -35,6 +39,6 @@ app.all('*', (req, res, next)=>{
         message: 'url not found'
     })
 })
-app.listen(4000, ()=>{
-    console.log('Server starting on port 4000');
+app.listen(PORT, ()=>{
+    console.log(`Server starting on port ${PORT}`);
 })
