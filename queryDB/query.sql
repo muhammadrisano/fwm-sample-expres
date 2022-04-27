@@ -35,3 +35,6 @@ SELECT * FROM products ORDER BY stock desc;
 
 -- delete / hapus record / data
 DELETE FROM products WHERE id = 4;
+
+
+INSERT INTO category(id, name)VALUES(9, 'snack'), (10, 'katogri 10'), (11, 'kategori 11'), (12, 'katogri 12'), (11, 'kategori 13');
