@@ -1,7 +1,9 @@
 // const pool = require('../config/db')
 const createError = require('http-errors')
 const categoryModel = require('../models/category')
+const commonHelper = require('../helper/common')
 const errorServ = new createError.InternalServerError()
+
 exports.getCategory = async (req, res, next) => {
   try {
     const page = parseInt(req.query.page) || 1
@@ -13,16 +15,22 @@ exports.getCategory = async (req, res, next) => {
     const { rows: [count] } = await categoryModel.countCategory()
     const totalData = parseInt(count.total)
     const totalPage = Math.ceil(totalData / limit)
-
-    res.status(200).json({
-      pagination: {
-        currentPage: page,
-        limit,
-        totalData,
-        totalPage
-      },
-      data: result
-    })
+    const pagination = {
+      currentPage: page,
+      limit,
+      totalData,
+      totalPage
+    }
+    // res.status(200).json({
+    //   pagination: {
+    //     currentPage: page,
+    //     limit,
+    //     totalData,
+    //     totalPage
+    //   },
+    //   data: result
+    // })
+    commonHelper.response(res, result, 200, 'get data success', pagination)
   } catch (error) {
     console.log(error)
     next(errorServ)
@@ -30,17 +38,14 @@ exports.getCategory = async (req, res, next) => {
 }
 
 exports.insertCategory = (req, res, next) => {
-  const { id, name } = req.body
+  const { name } = req.body
 
   const data = {
-    id,
     name
   }
   categoryModel.insert(data)
     .then(() => {
-      res.status(201).json({
-        data
-      })
+      commonHelper.response(res, data, 201, 'insert data success')
     })
     .catch((error) => {
       console.log(error)

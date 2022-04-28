@@ -10,9 +10,9 @@ const select = ({ limit, offset }) => {
     })
   })
 }
-const insert = ({ id, name }) => {
+const insert = ({ name }) => {
   return new Promise((resolve, reject) => {
-    pool.query('INSERT INTO category(id, name)VALUES($1, $2)', [id, name], (err, result) => {
+    pool.query('INSERT INTO category(name)VALUES($1)', [name], (err, result) => {
       if (!err) {
         resolve(result)
       } else {
