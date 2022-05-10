@@ -6,9 +6,10 @@ const protect = (req, res, next) => {
     if (req.headers.authorization) {
       token = req.headers.authorization.split(" ")[1];
 
-    //   let decoded = jwt.verify(token, process.env.SECRET_KEY_JWT);
-    let decoded = jwt.verify(token, 'dsfasdfsdaf');
-      console.log(decoded);
+      let decoded = jwt.verify(token, process.env.SECRET_KEY_JWT);
+    // let decoded = jwt.verify(token, 'dsfasdfsdaf');
+      // console.log(decoded);
+      req.decoded = decoded
       next()
     } else {
         next(createError(400, 'server need token'))
@@ -25,6 +26,15 @@ const protect = (req, res, next) => {
     }
   }
 };
+const isAdmin = (req, res, next)=>{
+  if(req.decoded.role !== 'admin'){
+    return next(createError(400, 'admin only'))
+  }
+  next()
+}
 module.exports = {
   protect,
+  isAdmin
 };
+
+// localhost:4000/users/profile

@@ -1,44 +1,55 @@
-const productModel = require('../models/products')
+const createHttpError = require("http-errors");
+const { response } = require("../helper/common");
+const productModel = require("../models/products");
 let products = [
   {
     id: 1,
-    name: 'baju',
+    name: "baju",
     price: 0,
-    stock: 0
-  }
-]
+    stock: 0,
+  },
+];
 
-const insert = (req, res) => {
-  const { id, stock, name, price } = req.body
+const insert = async(req, res) => {
+  try {
+    
+ console.log(req.get('host'));
+  // console.log(req.file);
+  const { name, price, description, stock, id_category } = req.body;
 
-  products.push({
-    id,
-    name,
-    stock,
-    price
-  })
-  res.json({
-    message: 'data berhasil ditambahkan'
-  })
+  const data = { 
+    name, 
+    price, 
+    description, 
+    stock, 
+    id_category,
+    photo: `http://${req.get('host')}/img/${req.file.filename}`
+  };
+  await productModel.create(data)
+  response(res, data, 201, 'berhasil di tambahkan')
+} catch (error) {
+  console.log(error);  
+  next(new createHttpError.InternalServerError())
 }
+};
 
 const detailProduct = async (req, res) => {
   try {
-    const id = req.params.id
-    const result = await productModel.getProductById(id)
+    const id = req.params.id;
+    const result = await productModel.getProductById(id);
     res.json({
-      data: result.rows[0]
-    })
+      data: result.rows[0],
+    });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 
   //   http::/localhost:4000/product/2
-}
+};
 
 const update = (req, res) => {
-  const { name, price, stock } = req.body
-  const id = req.params.id
+  const { name, price, stock } = req.body;
+  const id = req.params.id;
 
   products = products.map((item) => {
     if (item.id === id) {
@@ -46,35 +57,37 @@ const update = (req, res) => {
         id,
         name,
         price,
-        stock
-      }
-      return result
+        stock,
+      };
+      return result;
     } else {
-      return item
+      return item;
     }
-  })
+  });
   res.json({
-    message: 'data berhasil di update'
-  })
-}
+    message: "data berhasil di update",
+  });
+};
 const deleteProduct = (req, res) => {
-  const id = req.params.idproduct
-  products = products.filter((item) => item.id !== id)
+  const id = req.params.idproduct;
+  products = products.filter((item) => item.id !== id);
 
   res.json({
-    message: 'adata berhasil di hapus dengan id = ' + id
-  })
-}
+    message: "adata berhasil di hapus dengan id = " + id,
+  });
+};
 const getProduct = (req, res) => {
+  console.log("");
   res.json({
-    data: products
-  })
-}
+    data: products,
+    username: req.username,
+  });
+};
 
 module.exports = {
   getProduct,
   delete: deleteProduct,
   update,
   insert,
-  detailProduct
-}
+  detailProduct,
+};

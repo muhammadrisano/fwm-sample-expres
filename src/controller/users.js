@@ -27,7 +27,8 @@ const register = async (req, res, next) => {
       id: uuidv4(),
       email,
       password: passwrodHash,
-      fullname
+      fullname,
+      role: 'user'
     }
     await create(data)
     commonHelper.response(res, null, 201, 'user berhasil resgiter')
@@ -52,7 +53,7 @@ const login = async (req, res, next) => {
 
     const payload = {
       email: user.email,
-      role: 'admin'
+      role: user.role
     }
     // generate token
     user.token = authHelper.generateToken(payload)
@@ -63,7 +64,18 @@ const login = async (req, res, next) => {
     next(new createError.InternalServerError())
   }
 }
+const profile = async(req, res, next)=>{
+  const email = req.decoded.email
+  const {rows: [user]} = await findByEmail(email)
+  delete user.password
+  commonHelper.response(res, user, 200)
+}
+const deleteUser = async(req, res, next) =>{
+
+}
 module.exports = {
   register,
-  login
+  login,
+  profile,
+  deleteUser
 }

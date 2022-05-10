@@ -5,6 +5,7 @@ CREATE TABLE products(
     stock INT DEFAULT 0,
     price INT DEFAULT 0,
     id_category INT,
+    photo VARCHAR(128),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
     PRIMARY KEY(id)

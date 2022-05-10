@@ -1,13 +1,14 @@
 const express = require('express')
 const productController = require('../controller/products')
-const {protect} = require('../middlewares/auth')
-
+const {protect, isAdmin} = require('../middlewares/auth')
 const router = express.Router()
+const upload = require('../middlewares/upload')
+
 // -----> /products.....
 router
-  .get('/', protect, productController.getProduct)
+  .get('/', productController.getProduct)
   .get('/:id', productController.detailProduct)
-  .post('/', productController.insert)
+  .post('/', protect, upload.single('photo'), productController.insert)
   .put('/:id', productController.update)
   .delete('/:idproduct', productController.delete)
 

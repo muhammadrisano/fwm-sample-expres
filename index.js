@@ -8,6 +8,7 @@ const cors = require('cors')
 const createError = require('http-errors')
 const morgan = require('morgan')
 const mainRoute = require('./src/routes')
+const path = require('path')
 
 // const categoryRouter = require('./src/routes/category')
 // const productsRouter = require('./src/routes/products')
@@ -22,6 +23,7 @@ const app = express()
 const PORT = process.env.PORT || 5000
 // middleware
 app.use(express.json())
+app.use(express.urlencoded({extended: false}))
 app.use(cors())
 app.use(morgan('dev'))
 
@@ -51,7 +53,9 @@ app.use(morgan('dev'))
 app.use('/v1', mainRoute)
 // app.use('/category', categoryRouter)
 // app.use('/products', productsRouter)
+// console.log(path.join(__dirname, '/img'));
 
+app.use('/img', express.static(path.join(__dirname, '/upload')))
 app.all('*', (req, res, next) => {
   next(new createError.NotFound())
 })
