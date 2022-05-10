@@ -1,10 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const categoryControler = require('../controller/category')
+const { protect } = require('../middlewares/auth')
 
 //  ----> /category.....
 router
-  .get('/', categoryControler.getCategory)
+  .get('/', protect, categoryControler.getCategory)
   .post('/', categoryControler.insertCategory)
 // .put('/:id', categoryControler.updateCategory)
   .delete('/:id', categoryControler.deleteCategory)

@@ -7,10 +7,17 @@ const express = require('express')
 const cors = require('cors')
 const createError = require('http-errors')
 const morgan = require('morgan')
-const categoryRouter = require('./src/routes/category')
-const productsRouter = require('./src/routes/products')
-// const commonMid = require('./src/middlewares/common')
+const mainRoute = require('./src/routes')
 
+// const categoryRouter = require('./src/routes/category')
+// const productsRouter = require('./src/routes/products')
+
+// const
+// const commonMid = require('./src/middlewares/common')
+// www.api.risano.com/v1/products
+// www.api.risano.com/v1/category
+
+// www.api.risano.com/v2/category
 const app = express()
 const PORT = process.env.PORT || 5000
 // middleware
@@ -39,8 +46,11 @@ app.use(morgan('dev'))
 // app.post('/category', categoryController.insertCategory)
 // app.put('/category/:id', categoryController.updateCategory)
 // app.delete('/category/:id', categoryController.deleteCategory)
-app.use('/category', categoryRouter)
-app.use('/products', productsRouter)
+
+// router
+app.use('/v1', mainRoute)
+// app.use('/category', categoryRouter)
+// app.use('/products', productsRouter)
 
 app.all('*', (req, res, next) => {
   next(new createError.NotFound())
