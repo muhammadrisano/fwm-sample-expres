@@ -5,10 +5,10 @@ require('dotenv').config()
 // const getProduct = require('./src/controller/products')
 const express = require('express')
 const cors = require('cors')
-const createError = require('http-errors')
 const morgan = require('morgan')
 const mainRoute = require('./src/routes')
 const path = require('path')
+const createError = require('http-errors')
 
 // const categoryRouter = require('./src/routes/category')
 // const productsRouter = require('./src/routes/products')
@@ -56,17 +56,25 @@ app.use('/v1', mainRoute)
 // console.log(path.join(__dirname, '/img'));
 
 app.use('/img', express.static(path.join(__dirname, '/upload')))
-app.all('*', (req, res, next) => {
+
+
+app.all('*', (req, res, next)=>{
+
   next(new createError.NotFound())
 })
 
-app.use((err, req, res, next) => {
-  const messError = err.message || 'Internal Server Error'
-  const statusCode = err.status || 500
 
-  res.status(statusCode).json({
-    message: messError
-  })
+app.use((err, req, res, next)=>{
+  const messageError = err.message || 'Internal Server Error'
+  const statuError = err.status || 500
+  const formatError = {
+    status: 'Success',
+    statusCode:  statuError,
+    data: {
+      message: messageError
+    }
+  }
+  res.status(statuError).json(formatError)
 })
 
 app.listen(PORT, () => {

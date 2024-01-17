@@ -1,8 +1,9 @@
 // const pool = require('../config/db')
-const createError = require('http-errors')
 const categoryModel = require('../models/category')
 const commonHelper = require('../helper/common')
-const errorServ = new createError.InternalServerError()
+const createError = require('http-errors')
+
+
 
 exports.getCategory = async (req, res, next) => {
   try {
@@ -32,8 +33,7 @@ exports.getCategory = async (req, res, next) => {
     // })
     commonHelper.response(res, result, 200, 'get data success', pagination)
   } catch (error) {
-    console.log(error)
-    next(errorServ)
+    return next(createError(500, error.message))
   }
 }
 
@@ -88,7 +88,7 @@ exports.deleteCategory = (req, res, next) => {
     })
     .catch((error) => {
       console.log(error)
-      next(new createError.InternalServerError())
+
     })
 }
 

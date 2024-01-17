@@ -1,4 +1,3 @@
-const createHttpError = require("http-errors");
 const { response } = require("../helper/common");
 const productModel = require("../models/products");
 let products = [
@@ -29,7 +28,6 @@ const insert = async(req, res) => {
   response(res, data, 201, 'berhasil di tambahkan')
 } catch (error) {
   console.log(error);  
-  next(new createHttpError.InternalServerError())
 }
 };
 
@@ -76,12 +74,17 @@ const deleteProduct = (req, res) => {
     message: "adata berhasil di hapus dengan id = " + id,
   });
 };
-const getProduct = (req, res) => {
-  console.log("");
-  res.json({
-    data: products,
-    username: req.username,
-  });
+const getProduct = async (req, res) => {
+ const page = parseInt(req.query.page) || 1
+ const limit = parseInt(req.query.limit) || 3
+ const sort = req.query.sort || 'name'
+ const sortBy = req.query.sortBy || 'ASC'
+ const offset = (page - 1) * limit
+ const {rows} = await productModel.getProduct({limit, offset, sort, sortBy})
+ res.json({
+  data: rows
+ })
+
 };
 
 module.exports = {

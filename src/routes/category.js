@@ -5,7 +5,7 @@ const { protect, isAdmin } = require('../middlewares/auth')
 
 //  ----> /category.....
 router
-  .get('/', protect, categoryControler.getCategory)
+  .get('/',  categoryControler.getCategory)
   .post('/', protect, isAdmin, categoryControler.insertCategory)
 // .put('/:id', categoryControler.updateCategory)
   .delete('/:id', categoryControler.deleteCategory)

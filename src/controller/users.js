@@ -1,4 +1,3 @@
-const createError = require('http-errors')
 const bcrypt = require('bcryptjs')
 const { v4: uuidv4 } = require('uuid')
 const { findByEmail, create } = require('../models/users')
@@ -21,7 +20,7 @@ const register = async (req, res, next) => {
     // password =abc123+123sdf34  -> 123123sddsf234sdfsdf
 
     if (rowCount) {
-      return next(createError(403, 'user sudah terdaftar'))
+      // return next(createError(403, 'user sudah terdaftar'))
     }
     const data = {
       id: uuidv4(),
@@ -34,7 +33,7 @@ const register = async (req, res, next) => {
     commonHelper.response(res, null, 201, 'user berhasil resgiter')
   } catch (error) {
     console.log(error)
-    next(new createError.InternalServerError())
+
   }
 }
 const login = async (req, res, next) => {
@@ -57,11 +56,13 @@ const login = async (req, res, next) => {
     }
     // generate token
     user.token = authHelper.generateToken(payload)
+    // generate Refresh Token
+    user.refreshToken = authHelper.generateRefreshToken(payload)
 
     commonHelper.response(res, user, 201, 'anda berhasil login')
   } catch (error) {
     console.log(error)
-    next(new createError.InternalServerError())
+    // next(new createError.InternalServerError())
   }
 }
 const profile = async(req, res, next)=>{
@@ -73,9 +74,24 @@ const profile = async(req, res, next)=>{
 const deleteUser = async(req, res, next) =>{
 
 }
+
+const refreshToken = (req, res, next) =>{
+  const resfreshToken = req.body.refreshToken
+  const decode = jwt.decode(resfreshToken, process.env.SECRET_KEY_JWT)
+  const payload = {
+    email: decode.email,
+    role: decode.role
+  }
+  const result = {
+    token: authHelper.generateToken(payload),
+    resfreshToken: authHelper.generateRefreshToken(payload)
+  }
+  commonHelper.response(res, result, 200)
+}
 module.exports = {
   register,
   login,
   profile,
-  deleteUser
+  deleteUser,
+  refreshToken
 }
