@@ -81,10 +81,16 @@ const getProduct = async (req, res) => {
  const sortBy = req.query.sortBy || 'ASC'
  const offset = (page - 1) * limit
  const {rows} = await productModel.getProduct({limit, offset, sort, sortBy})
- res.json({
-  data: rows
- })
-
+const {rows:[count]} = await productModel.countProducts()
+const totalData = parseInt(count.total)
+const totalPage = Math.ceil(totalData/limit)
+const pagination = {
+  currentPage: page,
+  limit,
+  totalData,
+  totalPage
+}
+response(res, rows, 200, 'Get Data Success', pagination)
 };
 
 module.exports = {
