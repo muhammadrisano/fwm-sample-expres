@@ -8,6 +8,7 @@ let products = [
     stock: 0,
   },
 ];
+// login
 
 const insert = async(req, res) => {
   try {
